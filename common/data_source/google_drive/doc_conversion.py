@@ -58,6 +58,7 @@ ACCEPTED_PLAIN_TEXT_FILE_EXTENSIONS = [
 ACCEPTED_DOCUMENT_FILE_EXTENSIONS = [
     ".pdf",
     ".docx",
+    ".odt",
     ".pptx",
     ".xlsx",
     ".eml",

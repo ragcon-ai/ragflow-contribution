@@ -21,7 +21,7 @@ const ParserListMap = new Map([
     ],
   ],
   [
-    ['doc', 'docx'],
+    ['doc', 'docx', 'odt'],
     [
       DocumentParserType.Naive,
       DocumentParserType.Resume,

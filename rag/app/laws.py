@@ -133,7 +133,7 @@ class Pdf(PdfParser):
 def chunk(filename, binary=None, from_page=0, to_page=100000,
           lang="Chinese", callback=None, **kwargs):
     """
-        Supported file formats are docx, pdf, txt.
+        Supported file formats are docx, odt, pdf, txt.
     """
     parser_config = kwargs.get(
         "parser_config", {
@@ -148,9 +148,13 @@ def chunk(filename, binary=None, from_page=0, to_page=100000,
     # is it English
     eng = lang.lower() == "english"  # is_english(sections)
 
-    if re.search(r"\.docx$", filename, re.IGNORECASE):
+    if re.search(r"\.(docx|odt)$", filename.lower()):
         callback(0.1, "Start to parse.")
-        chunks = Docx()(filename, binary)
+        if filename.lower().endswith('.odt'):
+            from deepdoc.parser import OdtParser
+            chunks = OdtParser()(filename, binary)
+        else:
+            chunks = Docx()(filename, binary)
         callback(0.7, "Finish parsing.")
         return tokenize_chunks(chunks, doc, eng, None)
     
@@ -209,7 +213,7 @@ def chunk(filename, binary=None, from_page=0, to_page=100000,
 
     else:
         raise NotImplementedError(
-            "file type not supported yet(doc, docx, pdf, txt supported)")
+            "file type not supported yet(doc, docx, odt, pdf, txt supported)")
 
 
     # Remove 'Contents' part

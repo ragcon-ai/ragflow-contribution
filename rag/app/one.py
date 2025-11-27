@@ -64,7 +64,7 @@ class Pdf(PdfParser):
 def chunk(filename, binary=None, from_page=0, to_page=100000,
           lang="Chinese", callback=None, **kwargs):
     """
-        Supported file formats are docx, pdf, excel, txt.
+        Supported file formats are docx, odt, pdf, excel, txt.
         One file forms a chunk which maintains original text order.
     """
     parser_config = kwargs.get(
@@ -72,9 +72,13 @@ def chunk(filename, binary=None, from_page=0, to_page=100000,
             "chunk_token_num": 512, "delimiter": "\n!?。；！？", "layout_recognize": "DeepDOC"})
     eng = lang.lower() == "english"  # is_english(cks)
 
-    if re.search(r"\.docx$", filename, re.IGNORECASE):
+    if re.search(r"\.(docx|odt)$", filename.lower()):
         callback(0.1, "Start to parse.")
-        sections, tbls = naive.Docx()(filename, binary)
+        if filename.lower().endswith('.odt'):
+            from deepdoc.parser import OdtParser
+            sections, tbls = OdtParser()(filename, binary)
+        else:
+            sections, tbls = naive.Docx()(filename, binary)
         tbls=vision_figure_parser_docx_wrapper(sections=sections,tbls=tbls,callback=callback,**kwargs)
         sections = [s for s, _ in sections if s]
         for (_, html), _ in tbls:
@@ -146,7 +150,7 @@ def chunk(filename, binary=None, from_page=0, to_page=100000,
 
     else:
         raise NotImplementedError(
-            "file type not supported yet(doc, docx, pdf, txt supported)")
+            "file type not supported yet(doc, docx, odt, pdf, txt supported)")
 
     doc = {
         "docnm_kwd": filename,

@@ -507,7 +507,7 @@ def get_file_ext(file_name: str) -> str:
 def is_accepted_file_ext(file_ext: str, extension_type: OnyxExtensionType) -> bool:
     image_extensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp"}
     text_extensions = {".txt", ".md", ".mdx", ".conf", ".log", ".json", ".csv", ".tsv", ".xml", ".yml", ".yaml", ".sql"}
-    document_extensions = {".pdf", ".docx", ".pptx", ".xlsx", ".eml", ".epub", ".html"}
+    document_extensions = {".pdf", ".docx", ".odt", ".pptx", ".xlsx", ".eml", ".epub", ".html"}
 
     if extension_type & OnyxExtensionType.Multimedia and file_ext in image_extensions:
         return True

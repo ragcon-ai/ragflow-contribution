@@ -24,7 +24,7 @@ The **Parser** component supports parsing the following file types:
 | Image         | PNG, JPG, JPEG, GIF, TIF |
 | Email         | EML                      |
 | Text & Markup | TXT, MD, MDX, HTML, JSON |
-| Word          | DOCX                     |
+| Word          | DOCX, ODT                |
 | PowerPoint    | PPTX, PPT                |
 | Audio         | MP3, WAV                 |
 | Video         | MP4, AVI, MKV            |

@@ -22,7 +22,7 @@ from common.constants import ParserType
 from io import BytesIO
 from rag.nlp import rag_tokenizer, tokenize, tokenize_table, bullets_category, title_frequency, tokenize_chunks, docx_question_level
 from common.token_utils import num_tokens_from_string
-from deepdoc.parser import PdfParser, DocxParser
+from deepdoc.parser import PdfParser, DocxParser, OdtParser
 from deepdoc.parser.figure_parser import vision_figure_parser_pdf_wrapper,vision_figure_parser_docx_wrapper
 from docx import Document
 from PIL import Image
@@ -312,8 +312,11 @@ def chunk(filename, binary=None, from_page=0, to_page=100000,
         res.extend(tokenize_chunks(chunks, doc, eng, pdf_parser))
         return res
 
-    elif re.search(r"\.docx?$", filename, re.IGNORECASE):
-        docx_parser = Docx()
+    elif re.search(r"\.(docx?|odt)$", filename.lower()):
+        if filename.lower().endswith('.odt'):
+            docx_parser = OdtParser()
+        else:
+            docx_parser = Docx()
         ti_list, tbls = docx_parser(filename, binary,
                                     from_page=0, to_page=10000, callback=callback)
         tbls=vision_figure_parser_docx_wrapper(sections=ti_list,tbls=tbls,callback=callback,**kwargs)

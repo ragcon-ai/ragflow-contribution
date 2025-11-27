@@ -30,7 +30,7 @@ from PIL import Image
 from common.constants import LLMType
 from api.db.services.llm_service import LLMBundle
 from rag.utils.file_utils import extract_embed_file, extract_links_from_pdf, extract_links_from_docx, extract_html
-from deepdoc.parser import DocxParser, ExcelParser, HtmlParser, JsonParser, MarkdownElementExtractor, MarkdownParser, PdfParser, TxtParser
+from deepdoc.parser import DocxParser, ExcelParser, HtmlParser, JsonParser, MarkdownElementExtractor, MarkdownParser, OdtParser, PdfParser, TxtParser
 from deepdoc.parser.figure_parser import VisionFigureParser,vision_figure_parser_docx_wrapper,vision_figure_parser_pdf_wrapper
 from deepdoc.parser.pdf_parser import PlainParser, VisionParser
 from deepdoc.parser.mineru_parser import MinerUParser
@@ -545,7 +545,7 @@ def load_from_xml_v2(baseURI, rels_item_xml):
 def chunk(filename, binary=None, from_page=0, to_page=100000,
           lang="Chinese", callback=None, **kwargs):
     """
-        Supported file formats are docx, pdf, excel, txt.
+        Supported file formats are docx, odt, pdf, excel, txt.
         This method apply the naive ways to chunk files.
         Successive text will be sliced into pieces using 'delimiter'.
         Next, these successive pieces are merge into chunks whose token number is no more than 'Max token number'.
@@ -587,7 +587,7 @@ def chunk(filename, binary=None, from_page=0, to_page=100000,
                     callback(0.05, f"Failed to chunk embed {embed_filename}: {e}")
                 continue
 
-    if re.search(r"\.docx$", filename, re.IGNORECASE):
+    if re.search(r"\.(docx|odt)$", filename.lower()):
         callback(0.1, "Start to parse.")
         if parser_config.get("analyze_hyperlink", False) and is_root:
             urls = extract_links_from_docx(binary)
@@ -604,7 +604,12 @@ def chunk(filename, binary=None, from_page=0, to_page=100000,
 
         # fix "There is no item named 'word/NULL' in the archive", referring to https://github.com/python-openxml/python-docx/issues/1105#issuecomment-1298075246
         _SerializedRelationships.load_from_xml = load_from_xml_v2
-        sections, tables = Docx()(filename, binary)
+        
+        # Use appropriate parser based on file extension
+        if filename.lower().endswith('.odt'):
+            sections, tables = OdtParser()(filename, binary)
+        else:
+            sections, tables = Docx()(filename, binary)
 
         tables = vision_figure_parser_docx_wrapper(sections=sections, tbls=tables, callback=callback, **kwargs)
 
@@ -780,7 +785,7 @@ def chunk(filename, binary=None, from_page=0, to_page=100000,
             return []
     else:
         raise NotImplementedError(
-            "file type not supported yet(pdf, xlsx, doc, docx, txt supported)")
+            f"file type not supported yet for '{filename}' (pdf, xlsx, doc, docx, odt, txt, md, html, json, csv supported)")
 
     st = timer()
     if section_images:

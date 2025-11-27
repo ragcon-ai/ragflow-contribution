@@ -1,6 +1,7 @@
 export const FileIconMap = {
   doc: 'doc',
   docx: 'doc',
+  odt: 'doc',
   pdf: 'pdf',
   xls: 'excel',
   xlsx: 'excel',

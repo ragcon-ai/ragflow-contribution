@@ -74,10 +74,10 @@ def remote_call(filename, binary):
 
 def chunk(filename, binary=None, callback=None, **kwargs):
     """
-    The supported file formats are pdf, docx and txt.
+    The supported file formats are pdf, docx, odt and txt.
     To maximize the effectiveness, parse the resume correctly, please concat us: https://github.com/infiniflow/ragflow
     """
-    if not re.search(r"\.(pdf|doc|docx|txt)$", filename, flags=re.IGNORECASE):
+    if not re.search(r"\.(pdf|doc|docx|odt|txt)$", filename, flags=re.IGNORECASE):
         raise NotImplementedError("file type not supported yet(pdf supported)")
 
     if not binary:

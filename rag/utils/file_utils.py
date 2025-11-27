@@ -49,6 +49,9 @@ def _guess_ext(b: bytes) -> str:
                     return ".pptx"
                 if any(n.startswith("xl/") for n in names):
                     return ".xlsx"
+                # ODT files have content.xml, styles.xml, etc.
+                if "content.xml" in names and "mimetype" in names:
+                    return ".odt"
         except Exception:
             pass
         return ".zip"

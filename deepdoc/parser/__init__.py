@@ -20,6 +20,7 @@ from .html_parser import RAGFlowHtmlParser as HtmlParser
 from .json_parser import RAGFlowJsonParser as JsonParser
 from .markdown_parser import MarkdownElementExtractor
 from .markdown_parser import RAGFlowMarkdownParser as MarkdownParser
+from .odt_parser import RAGFlowOdtParser as OdtParser
 from .pdf_parser import PlainParser
 from .pdf_parser import RAGFlowPdfParser as PdfParser
 from .ppt_parser import RAGFlowPptParser as PptParser
@@ -34,6 +35,7 @@ __all__ = [
     "HtmlParser",
     "JsonParser",
     "MarkdownParser",
+    "OdtParser",
     "TxtParser",
     "MarkdownElementExtractor",
 ]

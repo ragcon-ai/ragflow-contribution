@@ -18,7 +18,7 @@ const ParserListMap = new Map([
     ],
   ],
   [
-    ['doc', 'docx'],
+    ['doc', 'docx', 'odt'],
     [
       'naive',
       'resume',

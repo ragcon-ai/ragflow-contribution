@@ -68,7 +68,7 @@ class Pdf(PdfParser):
 def chunk(filename, binary=None, from_page=0, to_page=100000,
           lang="Chinese", callback=None, **kwargs):
     """
-        Supported file formats are docx, pdf, txt.
+        Supported file formats are docx, odt, pdf, txt.
         Since a book is long and not all the parts are useful, if it's a PDF,
         please setup the page ranges for every book in order eliminate negative effects and save elapsed computing time.
     """
@@ -82,9 +82,13 @@ def chunk(filename, binary=None, from_page=0, to_page=100000,
     doc["title_sm_tks"] = rag_tokenizer.fine_grained_tokenize(doc["title_tks"])
     pdf_parser = None
     sections, tbls = [], []
-    if re.search(r"\.docx$", filename, re.IGNORECASE):
+    if re.search(r"\.(docx|odt)$", filename.lower()):
         callback(0.1, "Start to parse.")
-        doc_parser = naive.Docx()
+        if filename.lower().endswith('.odt'):
+            from deepdoc.parser import OdtParser
+            doc_parser = OdtParser()
+        else:
+            doc_parser = naive.Docx()
         # TODO: table of contents need to be removed
         sections, tbls = doc_parser(
             filename, binary=binary, from_page=from_page, to_page=to_page)

@@ -29,7 +29,7 @@ from api.db.services.file_service import FileService
 from api.db.services.llm_service import LLMBundle
 from common.misc_utils import get_uuid
 from rag.utils.base64_image import image2id
-from deepdoc.parser import ExcelParser
+from deepdoc.parser import ExcelParser, OdtParser
 from deepdoc.parser.mineru_parser import MinerUParser
 from deepdoc.parser.pdf_parser import PlainParser, RAGFlowPdfParser, VisionParser
 from deepdoc.parser.tcadp_parser import TCADPParser
@@ -96,6 +96,7 @@ class ParserParam(ProcessParamBase):
                 "suffix": [
                     "doc",
                     "docx",
+                    "odt",
                 ],
                 "output_format": "json",
             },
@@ -395,15 +396,27 @@ class Parser(ProcessBase):
         self.callback(random.randint(1, 5) / 100.0, "Start to work on a Word Processor Document")
         conf = self._param.setups["word"]
         self.set_output("output_format", conf["output_format"])
-        docx_parser = Docx()
+        
+        # Check if file is ODT or DOCX
+        if name.lower().endswith('.odt'):
+            parser = OdtParser()
+        else:
+            parser = Docx()
 
         if conf.get("output_format") == "json":
-            sections, tbls = docx_parser(name, binary=blob)
-            sections = [{"text": section[0], "image": section[1]} for section in sections if section]
+            sections, tbls = parser(name, binary=blob)
+            sections = [{"text": section[0], "image": section[1] if len(section) > 1 else None} for section in sections if section]
             sections.extend([{"text": tb, "image": None} for ((_,tb), _) in tbls])
             self.set_output("json", sections)
         elif conf.get("output_format") == "markdown":
-            markdown_text = docx_parser.to_markdown(name, binary=blob)
+            if hasattr(parser, 'to_markdown'):
+                markdown_text = parser.to_markdown(name, binary=blob)
+            else:
+                # For ODT, convert sections to markdown
+                secs, tbls = parser(name, binary=blob)
+                markdown_text = '\n\n'.join([sec[0] for sec in secs if sec])
+                for (_, tb), _ in tbls:
+                    markdown_text += '\n\n' + tb
             self.set_output("markdown", markdown_text)
 
     def _slides(self, name, blob):

@@ -7,6 +7,7 @@ export const fileIconMap = {
   dmg: 'dmg.svg',
   doc: 'doc.svg',
   docx: 'docx.svg',
+  odt: 'doc.svg',
   eps: 'eps.svg',
   exe: 'exe.svg',
   fig: 'fig.svg',

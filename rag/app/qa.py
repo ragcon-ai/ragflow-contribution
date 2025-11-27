@@ -450,8 +450,12 @@ def chunk(filename, binary=None, from_page=0, to_page=100000, lang="Chinese", ca
                 res.append(beAdoc(deepcopy(doc), sum_question, markdown(last_answer, extensions=['markdown.extensions.tables']), eng, index))
         return res
 
-    elif re.search(r"\.docx$", filename, re.IGNORECASE):
-        docx_parser = Docx()
+    elif re.search(r"\.(docx|odt)$", filename.lower()):
+        if filename.lower().endswith('.odt'):
+            from deepdoc.parser import OdtParser
+            docx_parser = OdtParser()
+        else:
+            docx_parser = Docx()
         qai_list, tbls = docx_parser(filename, binary,
                                     from_page=0, to_page=10000, callback=callback)
         res = tokenize_table(tbls, doc, eng)
@@ -460,7 +464,7 @@ def chunk(filename, binary=None, from_page=0, to_page=100000, lang="Chinese", ca
         return res
 
     raise NotImplementedError(
-        "Excel, csv(txt), pdf, markdown and docx format files are supported.")
+        "Excel, csv(txt), pdf, markdown, docx and odt format files are supported.")
 
 
 if __name__ == "__main__":
