@@ -73,8 +73,18 @@ class SyncBase:
                     for document_batch in document_batch_generator:
                         if not document_batch:
                             continue
-                        min_update = min([doc.doc_updated_at for doc in document_batch])
-                        max_update = max([doc.doc_updated_at for doc in document_batch])
+                        
+                        # Ensure doc_updated_at values are datetime objects
+                        update_times = []
+                        for doc in document_batch:
+                            if isinstance(doc.doc_updated_at, datetime):
+                                update_times.append(doc.doc_updated_at)
+                            else:
+                                # Fallback to current time if invalid
+                                update_times.append(datetime.now(timezone.utc))
+                        
+                        min_update = min(update_times)
+                        max_update = max(update_times)
                         next_update = max([next_update, max_update])
                         docs = []
                         for doc in document_batch:
